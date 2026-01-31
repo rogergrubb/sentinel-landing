@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel — Your AI. Sworn to you.</title>
+    <meta name="description" content="Full agentic AI power with absolute loyalty. Your credentials encrypted, your agent unchained, your control absolute.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --dark: #111111;
+            --darker: #161616;
+            --border: #252525;
+            --muted: #666666;
+            --text: #e0e0e0;
+            --white: #ffffff;
+            --accent: #00ff88;
+            --accent-dim: #00cc6a;
+            --danger: #ff3333;
+            --warning: #ffaa00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--black);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Grid background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Glowing orb */
+        .glow-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            pointer-events: none;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--black), transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.15em;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 3s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% { opacity: 1; }
+            95% { opacity: 0.3; }
+        }
+
+        .nav-cta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--accent);
+            color: var(--black);
+            box-shadow: 0 0 30px rgba(0,255,136,0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 3rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .hero-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(0,255,136,0); }
+        }
+
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(4rem, 12vw, 10rem);
+            line-height: 0.9;
+            letter-spacing: 0.02em;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero-tagline {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--muted);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+
+        .hero-tagline strong {
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+        }
+
+        .btn-primary {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            padding: 1rem 2rem;
+            background: var(--accent);
+            color: var(--black);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,255,136,0.3);
+        }
+
+        .btn-secondary {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text);
+            background: var(--darker);
+        }
+
+        /* Problem Section */
+        .problem {
+            padding: 8rem 3rem;
+            background: var(--dark);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .problem-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--danger);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .problem h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--white);
+            letter-spacing: 0.02em;
+            margin-bottom: 3rem;
+            max-width: 800px;
+        }
+
+        .vulnerability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            margin-top: 3rem;
+        }
+
+        .vulnerability {
+            background: var(--dark);
+            padding: 2rem;
+            position: relative;
+        }
+
+        .vulnerability::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--danger);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vulnerability:hover::before {
+            opacity: 1;
+        }
+
+        .vulnerability-icon {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .vulnerability h3 {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .vulnerability p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* Solution Section */
+        .solution {
+            padding: 8rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .solution .section-label {
+            color: var(--accent);
+        }
+
+        .solution h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--white);
+            letter-spacing: 0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .solution-subtitle {
+            font-size: 1.25rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .feature-check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+
+        .feature h3 {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .feature p {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            padding: 8rem 3rem;
+            background: var(--dark);
+            border-top: 1px solid var(--border);
+        }
+
+        .comparison-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .comparison h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--white);
+            letter-spacing: 0.02em;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .comparison-table > div {
+            background: var(--dark);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .comparison-header {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .comparison-header.them {
+            color: var(--danger);
+        }
+
+        .comparison-header.us {
+            color: var(--accent);
+        }
+
+        .comparison-row {
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .comparison-bad {
+            color: var(--danger);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .comparison-good {
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 8rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--white);
+            letter-spacing: 0.02em;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .pricing-subtitle {
+            font-size: 1.1rem;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent);
+        }
+
+        .pricing-card.featured::before {
+            content: 'RECOMMENDED';
+            position: absolute;
+            top: 0;
+            left: 2.5rem;
+            transform: translateY(-50%);
+            background: var(--accent);
+            color: var(--black);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            letter-spacing: 0.1em;
+        }
+
+        .pricing-tier {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price span {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1rem;
+            color: var(--muted);
+        }
+
+        .pricing-desc {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            color: var(--text);
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .pricing-card .btn-primary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .pricing-card .btn-secondary {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* CTA Section */
+        .final-cta {
+            padding: 8rem 3rem;
+            background: linear-gradient(to bottom, var(--black), var(--darker));
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .final-cta h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--white);
+            letter-spacing: 0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .final-cta p {
+            font-size: 1.25rem;
+            color: var(--muted);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Email Form */
+        .email-form {
+            display: flex;
+            gap: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .email-form input {
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-right: none;
+            color: var(--white);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .email-form input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .email-form input::placeholder {
+            color: var(--muted);
+        }
+
+        .email-form button {
+            padding: 1rem 2rem;
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            color: var(--black);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .email-form button:hover {
+            background: var(--accent-dim);
+            box-shadow: 0 0 30px rgba(0,255,136,0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .hero, .problem, .solution, .comparison, .pricing, .final-cta {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .comparison-table {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table > div:nth-child(3n+1) {
+                background: var(--darker);
+                font-weight: 500;
+            }
+
+            .email-form {
+                flex-direction: column;
+            }
+
+            .email-form input {
+                border-right: 1px solid var(--border);
+                border-bottom: none;
+            }
+
+            footer {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="glow-orb"></div>
+
+    <nav>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            SENTINEL
+        </div>
+        <a href="#pricing" class="nav-cta">GET EARLY ACCESS</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="status-dot"></span>
+            NOW IN PRIVATE BETA
+        </div>
+        <h1>YOUR AI.<br><span>SWORN TO YOU.</span></h1>
+        <p class="hero-tagline">
+            OpenClaw gave you power. We give you <strong>loyalty</strong>. 
+            Full agentic AI that works while you sleep — but can <strong>never</strong> be turned against you.
+        </p>
+        <div class="hero-ctas">
+            <a href="#pricing" class="btn-primary">
+                GET EARLY ACCESS
+                <span>→</span>
+            </a>
+            <a href="#problem" class="btn-secondary">SEE THE PROBLEM</a>
+        </div>
+    </section>
+
+    <section class="problem" id="problem">
+        <div class="problem-inner">
+            <div class="section-label">⚠ THE PROBLEM</div>
+            <h2>OPENCLAW IS POWERFUL.<br>IT'S ALSO A SECURITY NIGHTMARE.</h2>
+            <p style="color: var(--muted); max-width: 700px; font-size: 1.1rem;">
+                100,000+ people installed AI agents with full system access. Most have no idea what they've exposed.
+            </p>
+
+            <div class="vulnerability-grid">
+                <div class="vulnerability">
+                    <div class="vulnerability-icon">
+                        <span>⬤</span> CRITICAL
+                    </div>
+                    <h3>API Keys in Plaintext</h3>
+                    <p>Your Anthropic, OpenAI, and Gmail credentials stored in readable files. One infostealer away from compromise.</p>
+                </div>
+                <div class="vulnerability">
+                    <div class="vulnerability-icon">
+                        <span>⬤</span> CRITICAL
+                    </div>
+                    <h3>Prompt Injection</h3>
+                    <p>A malicious email forwarded your last 5 emails to an attacker. In 5 minutes. Automatically.</p>
+                </div>
+                <div class="vulnerability">
+                    <div class="vulnerability-icon">
+                        <span>⬤</span> HIGH
+                    </div>
+                    <h3>Supply Chain Attacks</h3>
+                    <p>26% of 31,000 agent skills contain vulnerabilities. One researcher got 4,000+ downloads with malicious code.</p>
+                </div>
+                <div class="vulnerability">
+                    <div class="vulnerability-icon">
+                        <span>⬤</span> HIGH
+                    </div>
+                    <h3>No Audit Trail</h3>
+                    <p>What did your agent do at 3am? You don't know. Neither does anyone else. Until it's too late.</p>
+                </div>
+                <div class="vulnerability">
+                    <div class="vulnerability-icon">
+                        <span>⬤</span> HIGH
+                    </div>
+                    <h3>Agent-to-Agent Manipulation</h3>
+                    <p>On MoltBook, other agents can talk to yours. And convince it to do things you never authorized.</p>
+                </div>
+                <div class="vulnerability">
+                    <div class="vulnerability-icon">
+                        <span>⬤</span> HIGH
+                    </div>
+                    <h3>No Kill Switch</h3>
+                    <p>If your agent goes rogue, you need to SSH into your Mac Mini and pray you remember the commands.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="solution" id="solution">
+        <div class="section-label">◆ THE SOLUTION</div>
+        <h2>LOYALTY AS ARCHITECTURE.</h2>
+        <p class="solution-subtitle">
+            Not a setting. Not a preference. Sworn allegiance built into the bones of every Sentinel agent.
+        </p>
+
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-check">✓</div>
+                <h3>Credential Vault</h3>
+                <p>Your API keys are encrypted and brokered. Your agent requests access — it never sees the raw key. Ever.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-check">✓</div>
+                <h3>Prompt Injection Blocked</h3>
+                <p>All inputs sanitized at the infrastructure level. Malicious instructions get filtered before they reach your agent.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-check">✓</div>
+                <h3>Skill Whitelist</h3>
+                <p>Only pre-approved skills can run. No surprise packages. No supply chain attacks. You control what's installed.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-check">✓</div>
+                <h3>Immutable Audit Logs</h3>
+                <p>Every action logged to append-only storage. Review what happened. Prove what didn't. Full accountability.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-check">✓</div>
+                <h3>Instant Kill Switch</h3>
+                <p>One click stops everything. From your phone. From anywhere. No SSH required. Immediate revocation.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-check">✓</div>
+                <h3>24/7 Autonomous Operation</h3>
+                <p>Full agentic power. Works while you sleep. Manages tasks, sends messages, monitors feeds. Unchained capability.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="comparison">
+        <div class="comparison-inner">
+            <h2>OPENCLAW VS SENTINEL</h2>
+            <div class="comparison-table">
+                <div class="comparison-header">CAPABILITY</div>
+                <div class="comparison-header them">OPENCLAW</div>
+                <div class="comparison-header us">SENTINEL</div>
+
+                <div class="comparison-row">Setup time</div>
+                <div class="comparison-bad">5-20 hours + Mac Mini</div>
+                <div class="comparison-good">5 minutes</div>
+
+                <div class="comparison-row">Credential storage</div>
+                <div class="comparison-bad">Plaintext files</div>
+                <div class="comparison-good">Encrypted vault</div>
+
+                <div class="comparison-row">Prompt injection protection</div>
+                <div class="comparison-bad">None</div>
+                <div class="comparison-good">Architecture-level</div>
+
+                <div class="comparison-row">Skill security</div>
+                <div class="comparison-bad">Install anything</div>
+                <div class="comparison-good">Whitelist only</div>
+
+                <div class="comparison-row">Audit trail</div>
+                <div class="comparison-bad">None</div>
+                <div class="comparison-good">Immutable logs</div>
+
+                <div class="comparison-row">Kill switch</div>
+                <div class="comparison-bad">SSH required</div>
+                <div class="comparison-good">One click</div>
+
+                <div class="comparison-row">Agent autonomy</div>
+                <div class="comparison-good">Full</div>
+                <div class="comparison-good">Full</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <h2>SIMPLE PRICING</h2>
+        <p class="pricing-subtitle">One agent. Full power. Absolute loyalty.</p>
+
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <div class="pricing-tier">STARTER</div>
+                <div class="pricing-price">$29<span>/month</span></div>
+                <p class="pricing-desc">Bring your own API keys. Perfect for testing.</p>
+                <ul class="pricing-features">
+                    <li>1 Sentinel agent</li>
+                    <li>Telegram integration</li>
+                    <li>Credential vault</li>
+                    <li>Audit logs (7 days)</li>
+                    <li>Community support</li>
+                </ul>
+                <a href="#" class="btn-secondary">JOIN WAITLIST</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="pricing-tier">PRO</div>
+                <div class="pricing-price">$99<span>/month</span></div>
+                <p class="pricing-desc">$50 in tokens included. Most popular choice.</p>
+                <ul class="pricing-features">
+                    <li>1 Sentinel agent</li>
+                    <li>Telegram + WhatsApp</li>
+                    <li>Credential vault</li>
+                    <li>Audit logs (90 days)</li>
+                    <li>Priority support</li>
+                    <li>Custom SOUL.md templates</li>
+                </ul>
+                <a href="#" class="btn-primary">GET EARLY ACCESS</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <h2>YOUR AGENT. UNCHAINED. LOYAL.</h2>
+        <p>Join the waitlist. Be first when we launch.</p>
+        <form class="email-form" action="#" method="POST">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit">JOIN WAITLIST</button>
+        </form>
+    </section>
+
+    <footer>
+        <div class="footer-logo">SENTINEL</div>
+        <div class="footer-links">
+            <a href="#">TWITTER</a>
+            <a href="#">DISCORD</a>
+            <a href="#">DOCUMENTATION</a>
+        </div>
+    </footer>
+
+    <script>
+        // Simple scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.vulnerability, .feature, .pricing-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Form submission
+        document.querySelector('.email-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input').value;
+            alert('Thanks! We\'ll notify ' + email + ' when Sentinel launches.');
+            this.querySelector('input').value = '';
+        });
+    </script>
+</body>
+</html>
